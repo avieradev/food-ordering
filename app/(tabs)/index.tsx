@@ -5,14 +5,12 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images, offers } from "@/constants";
 import { Fragment } from "react";
 import cn from "clsx";
 import CartButton from "@/components/CartButton";
-import * as Sentry from "@sentry/react-native";
 
 export default function Index() {
   return (
@@ -70,7 +68,7 @@ export default function Index() {
                 DELIVER TO
               </Text>
               <TouchableOpacity className={"flex-center flex-row"}>
-                <Text className={"paragraph-bold text-dark-100"}>Croatia</Text>
+                <Text className={"paragraph-bold text-dark-100"}>Spain</Text>
                 <Image
                   source={images.arrowDown}
                   className={"size-3"}
@@ -80,14 +78,6 @@ export default function Index() {
             </View>
             <CartButton />
           </View>
-        )}
-        ListFooterComponent={() => (
-          <Button
-            title="Try!"
-            onPress={() => {
-              Sentry.captureException(new Error("First error"));
-            }}
-          />
         )}
       />
     </SafeAreaView>
