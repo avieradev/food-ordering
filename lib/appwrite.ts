@@ -3,17 +3,24 @@ import {
   Avatars,
   Client,
   Databases,
+  Storage,
   ID,
   Query,
 } from "react-native-appwrite";
-import { CreateUserPrams, SignInParams } from "@/type";
+import { CreateUserPrams, GetMenuParams, SignInParams } from "@/type";
+import data from "@/lib/data";
 
 export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   platform: "com.aviera.foodordering",
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   databaseId: "688369ed0007a44a7669",
+  bucketId: "6887ac730018d616b605",
   userCollectionId: "68836a080034bc9e67f2",
+  categoriesCollectionId: "6887a9690027a2320936",
+  menuCollectionId: "6887a9e1002f7d644d37",
+  customizationsCollectionId: "6887aaa2002cc1f21ed7",
+  menuCustomizationsCollectionId: "6887ab95001a3448bba5",
 };
 
 export const client = new Client();
@@ -24,10 +31,9 @@ client
   .setPlatform(appwriteConfig.platform);
 
 export const account = new Account(client);
-
 export const databases = new Databases(client);
-
 const avatars = new Avatars(client);
+export const storage = new Storage(client);
 
 export const createUser = async ({
   email,
@@ -75,6 +81,35 @@ export const getCurrenUser = async () => {
     return currentUser.documents[0];
   } catch (e) {
     console.log(e);
+    throw new Error(e as string);
+  }
+};
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+  try {
+    const queries: string[] = [];
+
+    if (category) queries.push(Query.equal("categories", category));
+    if (query) queries.push(Query.search("name", query));
+    const menus = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.menuCollectionId,
+      queries,
+    );
+    return menus.documents;
+  } catch (e) {
+    throw new Error(e as string);
+  }
+};
+
+export const getCategories = async () => {
+  try {
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.categoriesCollectionId,
+    );
+    return categories.documents;
+  } catch (e) {
     throw new Error(e as string);
   }
 };
