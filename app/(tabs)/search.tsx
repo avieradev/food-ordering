@@ -1,34 +1,32 @@
 import { View, Text, FlatList } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAppwrite } from "@/lib/useAppwrite";
+import useAppwrite from "@/lib/useAppwrite";
 import { getCategories, getMenu } from "@/lib/appwrite";
 import { useLocalSearchParams } from "expo-router";
 import CartButton from "@/components/CartButton";
 import cn from "clsx";
+import MenuCard from "@/components/MenuCard";
+import { MenuItem } from "@/type";
+import SearchBar from "@/components/SearchBar";
+import Filter from "@/components/Filter";
 
 const Search = () => {
   const { category, query } = useLocalSearchParams<{
     query: string;
     category: string;
   }>();
+
   const { data, refetch, loading } = useAppwrite({
     fn: getMenu,
-    params: {
-      category,
-      query,
-      limit: 6,
-    },
+    params: { category, query, limit: 6 },
   });
-
-  const { data: categories } = useAppwrite({
-    fn: getCategories,
-  });
+  const { data: categories } = useAppwrite({ fn: getCategories });
 
   useEffect(() => {
     refetch({ category, query, limit: 6 });
   }, [category, query]);
-  console.log(categories);
+
   return (
     <SafeAreaView className={"bg-white h-full"}>
       <FlatList
@@ -42,7 +40,7 @@ const Search = () => {
                 !isFirstRightColItem ? "mt-10" : "mt-0",
               )}
             >
-              <Text>Menu Card</Text>
+              <MenuCard item={item as MenuItem} />
             </View>
           );
         }}
@@ -65,8 +63,8 @@ const Search = () => {
               </View>
               <CartButton />
             </View>
-            <Text>Search Input</Text>
-            <Text>Filter</Text>
+            <SearchBar />
+            <Filter categories={categories!} />
           </View>
         )}
         ListEmptyComponent={() => !loading && <Text> No results </Text>}
